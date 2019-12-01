@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs'
+import { readFile, writeFile, readdir } from 'fs'
 import { promisify } from 'util'
 import { resolve } from 'path'
 
@@ -11,8 +11,14 @@ import { Dropbox } from 'dropbox'
 
 const read = promisify(readFile)
 const write = promisify(writeFile)
+const ls = promisify(readdir)
 
-const configFile = resolve(__dirname, '../.dropbox')
+const cwd = process.cwd()
+const configFile = resolve(cwd, '.dropbox')
+
+const ignore = [
+  '.dropbox'
+]
 
 const initQuestions = [
   {
@@ -35,20 +41,32 @@ const initQuestions = [
 ];
 
 const getFiles = async ( accessToken: string, path: string ) => {
-  const dbx = new Dropbox({ accessToken, fetch: fetch });  
+  const dbx = new Dropbox({ accessToken, fetch });  
   const files = await dbx.filesListFolder({ path })
   return files.entries
 }
 
 const downloadFile = async (accessToken: string, file: { path: string, rev: string }) => {
-  const dbx = new Dropbox({ accessToken, fetch: fetch });  
+  const dbx = new Dropbox({ accessToken, fetch });  
   const fileContent = await dbx.filesDownload(file)
   return fileContent
 }
 
+const uploadFile = async (accessToken: string, path: string, contents: any) => {
+  const dbx = new Dropbox({ accessToken, fetch });  
+  try {
+    dbx.filesUpload({
+      path,
+      contents
+    })    
+  } catch (error) {
+    console.log({error})
+  }
+}
+
 program
   .version('1.0.0')
-  .description('Folder Sync')
+  .description('Remote Folder Sync')
 
 program
   .command('init')
@@ -72,11 +90,13 @@ program
   .command('pull')
   .description('Download this folder content from Dropbox')
   .action(async () => {
-    console.log(chalk.yellow('=========*** Contact Management System ***=========='))
     // TODO: Check if the folder was initialized
 
     const content = (await read(configFile)).toString('utf8')
     const { accessToken, path } = JSON.parse(content)
+    
+    console.log(chalk.grey(`Downloading ${path}`))
+
     const files = await getFiles(accessToken, path)
 
     files.forEach(async (file) => {
@@ -84,6 +104,8 @@ program
         path: file.path_lower,
         rev: (file as any).rev
       })
+
+      // TODO: Check if the file already exist and provides a diff
       write(fileData.name, fileData.fileBinary)
       console.log(chalk.gray(`${fileData.name} was downloaded`))
     })
@@ -92,9 +114,23 @@ program
 program
   .command('push')
   .description('Upload this folder content to Dropbox')
-  .action(() => {
-    console.log(chalk.yellow('=========*** Contact Management System ***=========='))
-    // inquirer.prompt(questions).then((answers) =>  actions.addContact(answers))
+  .action(async () => {
+    // TODO: Check if the folder was initialized
+
+    const content = (await read(configFile)).toString('utf8')
+    const { path, accessToken } = JSON.parse(content)
+    
+    console.log(chalk.grey(`Uploading ${path}`))
+
+    const files = await ls(cwd)
+    files.forEach(async (name) => {
+      // TODO: Only uploads changed files
+      if (!ignore.includes(name)) {
+        const content = (await read(resolve(cwd, name))).toString('utf8')
+        console.log({content})
+        await uploadFile(accessToken, `${path}/name`, content)
+      }
+    })
   })
 
 program.parse(process.argv);

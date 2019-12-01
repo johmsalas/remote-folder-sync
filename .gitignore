@@ -1,1 +1,4 @@
 node_modules
+.dropbox
+src/*.js
+src/*.js.map

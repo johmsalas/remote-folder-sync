@@ -1,7 +1,9 @@
 {
-  "name": "foldersync",
-  "version": "1.0.0",
-  "main": "cli.js",
+  "name": "remote-folder-sync",
+  "description": "Provides download and upload capabilities to cloud services like Dropbox",
+  "version": "0.0.1",
+  "author": "Johnny M. Salas <johmsalas+remote-folder-sync@gmail.com>",
+  "main": "index.js",
   "license": "MIT",
   "scripts": {
     "tsm": "ts-node ./src/cli.ts",
@@ -15,7 +17,8 @@
     "dist/src"
   ],
   "bin": {
-    "tsm": "./src/cli.js"
+    "remote-folder-sync": "./entry.js",
+    "remote-folder-sync-dev": "./dev-entry.js"
   },
   "dependencies": {
     "chalk": "^3.0.0",
