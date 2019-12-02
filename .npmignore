@@ -1,0 +1,6 @@
+node_modules
+.dropbox
+src/*.ts
+package-lock.json
+tsconfig.json
+yarn.lock
