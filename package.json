@@ -14,9 +14,6 @@
     "check-types": "tsc --noEmit",
     "check-formatting": "prettier --check '**/*.{js,json,css,md,scss,tsx,ts}'"
   },
-  "files": [
-    "dist/src"
-  ],
   "bin": {
     "remote-folder-sync": "./entry.js",
     "remote-folder-sync-dev": "./dev-entry.js"
