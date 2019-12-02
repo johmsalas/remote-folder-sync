@@ -1,7 +1,7 @@
 {
   "name": "remote-folder-sync",
   "description": "Provides download and upload capabilities to cloud services like Dropbox",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Johnny M. Salas <johmsalas+remote-folder-sync@gmail.com>",
   "main": "index.js",
   "license": "MIT",
