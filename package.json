@@ -5,6 +5,10 @@
   "author": "Johnny M. Salas <johmsalas+remote-folder-sync@gmail.com>",
   "main": "index.js",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johmsalas/remote-folder-sync"
+  },
   "scripts": {
     "test": "echo no tests",
     "tsm": "ts-node ./src/cli.ts",
